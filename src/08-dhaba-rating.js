@@ -45,17 +45,53 @@
  *   // => [{ rating: 5 }, { rating: 3 }]
  */
 export function createFilter(field, operator, value) {
-  // Your code here
+  const operators = [">", "<", ">=", "<=", "==="];
+  if (!operators.includes(String(operator)))
+    return function () {
+      return false;
+    };
+
+   return function (object) {
+    if (operator === ">") return object[field] > value;
+    if (operator === "<") return object[field] < value;
+    if (operator === ">=") return object[field] >= value;
+    if (operator === "<=") return object[field] <= value;
+    if (operator === "===") return object[field] === value;
+
+    return false;
+}
 }
 
 export function createSorter(field, order = "asc") {
-  // Your code here
+  return (a, b) => {
+    if (typeof a[field] === "number" && typeof b[field] === "number") {
+      if (order.toLowerCase() === "asc") return a[field] - b[field];
+      if (order.toLowerCase() === "desc") return b[field] - a[field];
+    }
+    if (typeof a[field] === "string" && typeof b[field] === "string") {
+      if (order.toLowerCase() === "asc") return a[field].localeCompare(b[field]);
+      if (order.toLowerCase() === "desc") return b[field].localeCompare(a[field]);
+    }
+    return 0;
+  };
 }
 
 export function createMapper(fields) {
-  // Your code here
+
+  return function (obj) { 
+    let newObject={}
+    fields.forEach((item)=> {if (obj.hasOwnProperty(item)) newObject[item]=obj[item] })
+    return newObject;
+  }
 }
 
 export function applyOperations(data, ...operations) {
-  // Your code here
+  if  (!Array.isArray(data)) return [];
+  for (const operation of operations) {
+     let result=operation(data)
+      data= result
+    
+  }
+  return data;
+  
 }
